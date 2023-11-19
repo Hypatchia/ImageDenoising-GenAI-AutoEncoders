@@ -5,7 +5,7 @@ import tensorflow as tf
 from PIL import Image
 import os
 import matplotlib.pyplot as plt
-from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D,LeakyReLU, BatchNormalization, Activation, Concatenate, Dropout
+from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D,  LeakyReLU, BatchNormalization, Activation, Concatenate, Dropout
 from tensorflow.keras.models import Model
 from tensorflow.keras.initializers import GlorotNormal
 from tensorflow.keras.optimizers import Adam
@@ -15,7 +15,7 @@ import zipfile
 
 # %%
 # Download the dataset saved on drive using ID
-!gdown "put the ID of the file here"
+!gdown ""
 
 # %%
 # Drive dataset path
@@ -35,7 +35,7 @@ def extract_zip(zip_path, extraction_path):
     """
     # Create the extraction directory if it doesn't exist
     os.makedirs(extraction_path, exist_ok=True)
-    
+
     # Extract the zip file
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(extraction_path)
@@ -48,6 +48,9 @@ dataset_file_path = '/content/Dataset.zip'
 # Directory where you want to extract the images
 extraction_path = '/content/'
 
+
+# %%
+extract_zip(dataset_file_path,extraction_path)
 
 # %%
 # Set dataset parameters
@@ -103,17 +106,24 @@ train_images = load_images(train_dir, target_size)
 val_images = load_images(val_dir, target_size)
 
 # %%
-def apply_noise_image(image, scale=10):
+import numpy as np
+import tensorflow as tf
+
+def apply_noise_image(image, min_scale=5, max_scale=25):
     """
-    Applies Gaussian noise to an input image.
+    Applies Gaussian noise to an input image with a random scale.
 
     Parameters:
     - image (numpy.ndarray): Input image.
-    - scale (float, optional): Scaling factor for the noise intensity. Defaults to 10.
+    - min_scale (float, optional): Minimum scaling factor for the noise intensity. Defaults to 5.
+    - max_scale (float, optional): Maximum scaling factor for the noise intensity. Defaults to 25.
 
     Returns:
     - numpy.ndarray: Noised image.
     """
+
+    # Generate a random scale within the specified range
+    scale = np.random.uniform(min_scale, max_scale)
 
     # Generate Gaussian noise with the same shape as the image
     noise = np.random.randn(*image.shape)
@@ -126,11 +136,12 @@ def apply_noise_image(image, scale=10):
 
     # Ensure that the resulting image is still within [0, 1]
     noised_image = np.clip(noised_image, 0, 1)
-    
+
     # Convert the image to float32
     noised_image = tf.cast(noised_image, tf.float32)
 
     return noised_image
+
 
 # %%
 # Apply noise to train and val images
@@ -149,7 +160,7 @@ def show_images(images, nmax=4):
     Returns:
     - None
     """
-    
+
     # Create subplots based on the number of images to display
     fig, ax = plt.subplots(ncols=min(len(images), nmax), figsize=(12, 4))
 
@@ -218,9 +229,7 @@ def build_autoencoder(image_shape):
 
     return autoencoder
 
-
 # %%
-# Define function to compute ssim metric
 import tensorflow as tf
 
 def ssim_metric(original, reconstructed):
@@ -257,6 +266,7 @@ def psnr_metric(img1, img2):
     psnr = tf.image.psnr(img1, img2, max_val=1.0)
     return psnr
 
+
 # %%
 # Build the model
 autoencoder= build_autoencoder(image_shape)
@@ -274,6 +284,9 @@ autoencoder.summary()
 # Set training parameters
 batch_size=32
 n_epochs=1000
+
+# %%
+del autoencoder
 
 # %%
 # Train AUtoEncoder
@@ -338,7 +351,7 @@ def show_autoencoder_output(noised_val_images, reconstructed_images, val_images,
     - None
     """
     n = len(noised_val_images)
-    
+
     # Increase the figure size
     plt.figure(figsize=(40, 40))
 
@@ -366,7 +379,7 @@ def show_autoencoder_output(noised_val_images, reconstructed_images, val_images,
 
     # Reduce spacing between images
     plt.subplots_adjust(wspace=0.05, hspace=0.05)
-    
+
     # Save the visualization
     plt.savefig(save_path)
 
@@ -486,6 +499,19 @@ plot_ssim_and_psnr(ssim_scores, psnr_scores)
 autoencoder.save('denoising_autoencoder.keras')
 # Save trained model
 autoencoder.save('denoising_autoencoder.h5')
+
+
+# %%
+autoencoder.save('AutoEncoder')
+
+# %%
+from google.colab import files
+import shutil
+shutil.make_archive('AutoEncoder', 'zip', 'AutoEncoder)
+
+files.download("AutoEncoder.zip")
+
+# %%
 
 
 
