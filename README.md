@@ -1,11 +1,14 @@
 ## Overview
 Real-life datasets are invaluable for training machine learning models, but they often come with inherent flaws stemming from various factors.
 
-In the context of images, these imperfections may include environmental conditions, varying lighting, and the presence of unwanted artifacts. External factors, such as sensor noise and compression artifacts, contribute additional challenges.
+In the context of images, these imperfections may include environmental conditions, varying lighting, and the presence of unwanted artifacts. External factors, such as sensor noise and compression artifacts, contribute to additional challenges.
 
 In computer vision applications, noise disrupts the clarity and accuracy of image analysis, impacting domains like object recognition, scene understanding, and image segmentation. Noise reduction becomes crucial for improving the reliability of models operating in these domains.
 
 Generative models, particularly AutoEncoders, have demonstrated their proficiency in mitigating noise and reconstructing high-quality images. This project specifically focuses on leveraging Convolutional AutoEncoders for the purpose of denoising landscape images, aiming to enhance the visual quality and interpretability of the data.
+
+<h3> The following is a webpage-format report for the project: <a href="https://sambelh.azurewebsites.net/image-denoising/">https://sambelh.azurewebsites.net/image-denoising/</a></h3>
+
 <h3 align="center">Denoising Results</h3>
 <p align="center">
   <img src="output/Output.png" alt="Dataset Train & Validation" style="width:50%; height:auto;">
